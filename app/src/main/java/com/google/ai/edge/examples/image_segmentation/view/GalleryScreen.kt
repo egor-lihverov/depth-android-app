@@ -132,7 +132,7 @@ fun GalleryScreen(
                                 onImageAnalyzed(it)
                             }
                         },
-                        contentScale = ContentScale.Crop,
+                        contentScale = ContentScale.Fit,
                     )
                 }
 

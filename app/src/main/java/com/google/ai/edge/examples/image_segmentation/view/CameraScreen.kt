@@ -138,7 +138,7 @@ fun CameraPreview(
   val previewView = remember {
     PreviewView(context).apply {
       layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
-      scaleType = PreviewView.ScaleType.FILL_START
+      scaleType = PreviewView.ScaleType.FIT_CENTER
     }
   }
 

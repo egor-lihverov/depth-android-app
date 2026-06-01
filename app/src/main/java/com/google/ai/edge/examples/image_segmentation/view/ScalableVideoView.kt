@@ -73,28 +73,33 @@ class ScalableVideoView(context: Context) : FrameLayout(context) {
     val containerHeight = MeasureSpec.getSize(heightMeasureSpec)
 
     if (displayMode == DisplayMode.FULL_SCREEN) {
-      // Always stretch to fill the entire container
-      textureView.layoutParams = FrameLayout.LayoutParams(containerWidth, containerHeight)
-      setMeasuredDimension(containerWidth, containerHeight)
-      return
-    }
+      // FIT_CENTER: fit video entirely within container, maintain aspect ratio
+      if (mVideoWidth > 0 && mVideoHeight > 0) {
+        val videoAspectRatio = mVideoWidth.toFloat() / mVideoHeight
+        val containerAspectRatio = containerWidth.toFloat() / containerHeight
 
-    var width = containerWidth
-    var height = containerHeight
+        val (width, height) = if (videoAspectRatio > containerAspectRatio) {
+          // Video is wider - fit to width
+          Pair(containerWidth, (containerWidth / videoAspectRatio).toInt())
+        } else {
+          // Video is taller - fit to height
+          Pair((containerHeight * videoAspectRatio).toInt(), containerHeight)
+        }
 
-    if (displayMode == DisplayMode.ORIGINAL && mVideoWidth > 0 && mVideoHeight > 0) {
-      val videoAspectRatio = mVideoWidth.toFloat() / mVideoHeight
-      val containerAspectRatio = containerWidth.toFloat() / containerHeight
-
-      if (videoAspectRatio > containerAspectRatio) {
-        height = (containerWidth / videoAspectRatio).toInt()
-      } else {
-        width = (containerHeight * videoAspectRatio).toInt()
+        // Center the video
+        val offsetX = (containerWidth - width) / 2
+        val offsetY = (containerHeight - height) / 2
+        textureView.layoutParams = FrameLayout.LayoutParams(width, height)
+        textureView.translationX = offsetX.toFloat()
+        textureView.translationY = offsetY.toFloat()
+        setMeasuredDimension(containerWidth, containerHeight)
+        return
       }
     }
 
-    textureView.layoutParams = FrameLayout.LayoutParams(width, height)
-    setMeasuredDimension(width, height)
+    // DEFAULT: Fill container
+    textureView.layoutParams = FrameLayout.LayoutParams(containerWidth, containerHeight)
+    setMeasuredDimension(containerWidth, containerHeight)
   }
 
   fun setVideoURI(uri: android.net.Uri) {
