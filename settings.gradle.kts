@@ -36,7 +36,7 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "Image Segmentation"
+rootProject.name = "Depth Estimation"
 
 include(":app")
 
