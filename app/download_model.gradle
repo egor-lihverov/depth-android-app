@@ -1,0 +1,8 @@
+tasks.register('depthModel', Download) {
+    src 'https://huggingface.co/litert-community/depth-anything-v2-small/resolve/main/depth_anything_v2_vit_tiny_256x256_fp32.tflite'
+    dest project.ext.ASSET_DIR + '/depth_model.tflite'
+    overwrite false
+    retries 5
+}
+
+preBuild.dependsOn depthModel
