@@ -27,7 +27,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -100,7 +103,9 @@ fun GalleryScreen(
         }
     }
 
-    Column(modifier = modifier) {
+    val width = LocalConfiguration.current.screenWidthDp
+    val height = width / 9 * 16
+    Column(modifier = modifier.width(width.dp).height(height.dp)) {
         // Top half: Original image/video (rendered using getPixels approach)
         Box(
             modifier = Modifier

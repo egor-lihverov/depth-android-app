@@ -58,20 +58,27 @@ class MainViewModel(private val depthHelper: DepthHelper) : ViewModel() {
 
   private var estimateJob: Job? = null
 
+  private val sourceAspectRatio = MutableStateFlow<Float?>(null)
+  
   private val depthUiShareFlow =
     MutableStateFlow<Pair<OverlayInfo?, Long>>(Pair(null, 0L)).also { flow ->
       viewModelScope.launch {
         depthHelper.depth
           .filter { it.depth.data.isNotEmpty() }
-          .map {
-            val depth = it.depth
+          .combine(sourceAspectRatio) { depthData, aspectRatio ->
+            val depth = depthData.depth
             val depthValues = depth.data
             val width = depth.width
             val height = depth.height
 
-            val overlayInfo = OverlayInfo(depthValues = depthValues, width = width, height = height)
+            val overlayInfo = OverlayInfo(
+              depthValues = depthValues,
+              width = width,
+              height = height,
+              aspectRatio = aspectRatio // Use source image/video aspect ratio
+            )
 
-            val inferenceTime = it.inferenceTime
+            val inferenceTime = depthData.inferenceTime
             Pair(overlayInfo, inferenceTime)
           }
           .collect { flow.emit(it) }
@@ -128,6 +135,7 @@ class MainViewModel(private val depthHelper: DepthHelper) : ViewModel() {
       viewModelScope.launch {
         val bitmap = imageProxy.toBitmap()
         originalBitmap.emit(bitmap)
+        sourceAspectRatio.emit(bitmap.width.toFloat() / bitmap.height.toFloat())
         depthHelper.estimate(bitmap, imageProxy.imageInfo.rotationDegrees)
         imageProxy.close()
       }
@@ -145,6 +153,7 @@ class MainViewModel(private val depthHelper: DepthHelper) : ViewModel() {
       viewModelScope.launch {
         val argbBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
         originalBitmap.emit(argbBitmap)
+        sourceAspectRatio.emit(argbBitmap.width.toFloat() / argbBitmap.height.toFloat())
         depthHelper.estimate(argbBitmap, rotationDegrees)
       }
   }

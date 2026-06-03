@@ -33,32 +33,11 @@ fun DepthOverlay(
   modifier: Modifier = Modifier,
   overlayInfo: OverlayInfo,
   lensFacing: Int,
-  containerAspectRatio: Float? = null,  // Optional: override container aspect ratio
 ) {
   Canvas(modifier = modifier) {
     val containerWidth: Float = size.width
     val containerHeight: Float = size.height
     
-    // Use provided aspect ratio or calculate from container
-    val effectiveWidth = if (containerAspectRatio != null) {
-      if (containerAspectRatio > containerWidth / containerHeight) {
-        containerWidth
-      } else {
-        containerHeight * containerAspectRatio
-      }
-    } else {
-      containerWidth
-    }
-    val effectiveHeight = if (containerAspectRatio != null) {
-      if (containerAspectRatio > containerWidth / containerHeight) {
-        containerWidth / containerAspectRatio
-      } else {
-        containerHeight
-      }
-    } else {
-      containerHeight
-    }
-
     // Convert depth values to colors using Viridis colormap
     val depthValues = overlayInfo.depthValues
     val width = overlayInfo.width
@@ -84,20 +63,30 @@ fun DepthOverlay(
         image
       }
 
-    // FIT_CENTER: calculate scale to fit image entirely within effective container
+    // Get image dimensions
     val imageWidth = orientedBitmap.width.toFloat()
     val imageHeight = orientedBitmap.height.toFloat()
-
-    val scaleW = effectiveWidth / imageWidth
-    val scaleH = effectiveHeight / imageHeight
-    val scale = minOf(scaleW, scaleH)
-
-    val scaledWidth = imageWidth * scale
-    val scaledHeight = imageHeight * scale
-
-    // Center the image within the effective area
-    val offsetX = (effectiveWidth - scaledWidth) / 2
-    val offsetY = (effectiveHeight - scaledHeight) / 2
+    val imageAspectRatio = imageWidth / imageHeight
+    
+    // Calculate scaled dimensions to fit container while maintaining aspect ratio
+    val containerAspectRatio = containerWidth / containerHeight
+    
+    val scaledWidth: Float
+    val scaledHeight: Float
+    
+    if (imageAspectRatio > containerAspectRatio) {
+      // Image is wider - fit to width
+      scaledWidth = containerWidth
+      scaledHeight = containerWidth / imageAspectRatio
+    } else {
+      // Image is taller - fit to height
+      scaledWidth = containerHeight * imageAspectRatio
+      scaledHeight = containerHeight
+    }
+    
+    // Center the image within the container
+    val offsetX = (containerWidth - scaledWidth) / 2
+    val offsetY = (containerHeight - scaledHeight) / 2
 
     // Scale bitmap to final size and draw at centered position
     val scaledBitmap = orientedBitmap.scale(scaledWidth.toInt(), scaledHeight.toInt(), true)

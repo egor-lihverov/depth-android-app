@@ -51,8 +51,6 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Tab
-import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -163,18 +161,7 @@ class MainActivity : ComponentActivity() {
     onImageProxyAnalyzed: (ImageProxy) -> Unit,
     onImageBitMapAnalyzed: (Bitmap, Int) -> Unit,
   ) {
-    val tabs = Tab.entries
     Column(modifier) {
-      TabRow(selectedTabIndex = tab.ordinal) {
-        for (t in tabs) {
-          Tab(
-            text = { Text(t.name, color = Color.White) },
-            selected = tab == t,
-            onClick = { onTabChanged(t) },
-          )
-        }
-      }
-
       when (tab) {
         Tab.Camera ->
           CameraScreen(uiState = uiState, onImageAnalyzed = { onImageProxyAnalyzed(it) })

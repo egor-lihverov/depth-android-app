@@ -31,4 +31,9 @@ class UiState(
   val lensFacing: Int = CameraSelector.LENS_FACING_BACK,
 )
 
-@Immutable class OverlayInfo(val depthValues: FloatArray, val width: Int, val height: Int)
+@Immutable class OverlayInfo(
+  val depthValues: FloatArray,
+  val width: Int,
+  val height: Int,
+  val aspectRatio: Float? = null, // width / height of source image/video
+)

@@ -87,7 +87,7 @@ fun CameraScreen(
   }
 
   val width = LocalConfiguration.current.screenWidthDp
-  val height = width / 3 * 4
+  val height = width / 9 * 16
   Column(modifier = Modifier.width(width.dp).height(height.dp)) {
     // Top half: Original camera preview (rendered using getPixels approach)
     Box(
